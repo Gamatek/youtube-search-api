@@ -248,7 +248,7 @@ const GetVideoDetails = async (videoId) => {
                 .toString() || null,
             suggestion: result.secondaryResults.secondaryResults.results
                 .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
-                .map((x) => compactVideoRenderer(x)),
+                .map((x) => compactVideoRenderer(x))
         };
 
         return await Promise.resolve(res);
