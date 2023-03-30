@@ -234,6 +234,19 @@ const GetVideoDetails = async (videoId) => {
         const result = initData.initdata.contents.twoColumnWatchNextResults;
         const firstContent = result.results.results.contents[0].videoPrimaryInfoRenderer;
         const secondContent = result.results.results.contents[1].videoSecondaryInfoRenderer;
+        console.log(initData);
+
+        const thumbnails = [
+            `https://img.youtube.com/vi/${videoId}/default.jpg`,
+            `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/sqdefault.jpg`,
+            `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+        ];
+
+        const thumbnailsFetched = await Promise.all(
+            thumbnails.map(async (url) => await axios(url, { validateStatus: false }))
+        );
 
         const res = {
             title: firstContent.title.runs[0].text,
@@ -245,6 +258,7 @@ const GetVideoDetails = async (videoId) => {
                 badges: secondContent.owner.videoOwnerRenderer.badges?.map((x) => x.metadataBadgeRenderer.icon.iconType) || [],
                 thumbnails: secondContent.owner.videoOwnerRenderer.thumbnail.thumbnails
             },
+            thumbnails: thumbnails.filter((url, i) => thumbnailsFetched[i].status === 200),
             description: secondContent.attributedDescription.content,
             suggestions: result.secondaryResults.secondaryResults.results
             .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
