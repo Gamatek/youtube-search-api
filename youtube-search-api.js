@@ -257,7 +257,7 @@ const GetVideoDetails = async (videoId) => {
                 badges: secondContent.owner.videoOwnerRenderer.badges?.map((x) => x.metadataBadgeRenderer.icon.iconType) || [],
                 thumbnails: secondContent.owner.videoOwnerRenderer.thumbnail.thumbnails
             },
-            thumbnails: thumbnails.filter((url, i) => thumbnailsFetched[i].status === 200),
+            thumbnails: thumbnails.filter((url, i) => thumbnailsFetched[i].status === 200).map((url) => { return { url }; }),
             description: secondContent.attributedDescription.content,
             suggestions: result.secondaryResults.secondaryResults.results
             .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
