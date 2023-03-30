@@ -232,23 +232,23 @@ const GetVideoDetails = async (videoId) => {
     try {
         const initData = await GetYoutubeInitData(endpoint);
         const result = initData.initdata.contents.twoColumnWatchNextResults;
-        const firstContent = result.results.results.contents[0]
-            .videoPrimaryInfoRenderer;
-        const secondContent = result.results.results.contents[1]
-            .videoSecondaryInfoRenderer;
+        const firstContent = result.results.results.contents[0].videoPrimaryInfoRenderer;
+        const secondContent = result.results.results.contents[1].videoSecondaryInfoRenderer;
+
         const res = {
             title: firstContent.title.runs[0].text,
             isLive: firstContent.viewCount.videoViewCountRenderer.hasOwnProperty("isLive")
-                ? firstContent.viewCount.videoViewCountRenderer.isLive
-                : false,
-            channel: secondContent.owner.videoOwnerRenderer.title.runs[0].text,
-            description: secondContent.description?.runs
-                .map((x) => x.text)
-                .join()
-                .toString() || null,
-            suggestion: result.secondaryResults.secondaryResults.results
-                .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
-                .map((x) => compactVideoRenderer(x))
+            ? firstContent.viewCount.videoViewCountRenderer.isLive
+            : false,
+            author: {
+                name: secondContent.owner.videoOwnerRenderer.title.runs[0].text,
+                badges: secondContent.owner.videoOwnerRenderer.badges?.map((x) => x.metadataBadgeRenderer.icon.iconType) || [],
+                thumbnails: secondContent.owner.videoOwnerRenderer.thumbnail.thumbnails
+            },
+            description: secondContent.attributedDescription.content,
+            suggestions: result.secondaryResults.secondaryResults.results
+            .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
+            .map((x) => compactVideoRenderer(x))
         };
 
         return await Promise.resolve(res);
