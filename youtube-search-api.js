@@ -234,7 +234,6 @@ const GetVideoDetails = async (videoId) => {
         const result = initData.initdata.contents.twoColumnWatchNextResults;
         const firstContent = result.results.results.contents[0].videoPrimaryInfoRenderer;
         const secondContent = result.results.results.contents[1].videoSecondaryInfoRenderer;
-        console.log(initData);
 
         const thumbnails = [
             `https://img.youtube.com/vi/${videoId}/default.jpg`,
