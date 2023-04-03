@@ -235,7 +235,7 @@ const GetVideoDetails = async (videoId, { fetchVideoThumbnail = true } = {}) => 
         const firstContent = result.results.results.contents[0].videoPrimaryInfoRenderer;
         const secondContent = result.results.results.contents[1].videoSecondaryInfoRenderer;
 
-        let videoThumbnailUrl = null;
+        let videoThumbnail = null;
         if(fetchVideoThumbnail) {
             const qualitys = [
                 "maxresdefault",
@@ -249,7 +249,7 @@ const GetVideoDetails = async (videoId, { fetchVideoThumbnail = true } = {}) => 
                 const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
                 const { status } = await axios(url, { validateStatus: false });
                 if(status === 200) {
-                    videoThumbnailUrl = url;
+                    videoThumbnail = { quality, url };
                     break;
                 };
             };
@@ -265,7 +265,7 @@ const GetVideoDetails = async (videoId, { fetchVideoThumbnail = true } = {}) => 
                 badges: secondContent.owner.videoOwnerRenderer.badges?.map((x) => x.metadataBadgeRenderer.icon.iconType) || [],
                 thumbnails: secondContent.owner.videoOwnerRenderer.thumbnail.thumbnails
             },
-            thumbnailUrl: videoThumbnailUrl,
+            thumbnail: videoThumbnail,
             description: secondContent.attributedDescription.content,
             suggestions: result.secondaryResults.secondaryResults.results
             .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
