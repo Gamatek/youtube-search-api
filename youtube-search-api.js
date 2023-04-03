@@ -227,9 +227,7 @@ const GetChannelById = async (channelId) => {
     };
 };
 
-const GetVideoDetails = async (videoId, {
-    fetchVideoThumbnails = true
-} = {}) => {
+const GetVideoDetails = async (videoId, { fetchVideoThumbnail = true } = {}) => {
     const endpoint = `${youtubeEndpoint}/watch?v=${videoId}`;
     try {
         const initData = await GetYoutubeInitData(endpoint);
@@ -237,23 +235,24 @@ const GetVideoDetails = async (videoId, {
         const firstContent = result.results.results.contents[0].videoPrimaryInfoRenderer;
         const secondContent = result.results.results.contents[1].videoSecondaryInfoRenderer;
 
-        let videoThumbnails = [];
-
-        if(fetchVideoThumbnails) {
-            const thumbnails = [
-                `https://img.youtube.com/vi/${videoId}/default.jpg`,
-                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/sqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+        let videoThumbnailUrl = null;
+        if(fetchVideoThumbnail) {
+            const qualitys = [
+                "maxresdefault",
+                "sddefault",
+                "hqdefault",
+                "mqdefault",
+                "default"
             ];
-    
-            const thumbnailsFetched = await Promise.all(
-                thumbnails.map(async (url) => await axios(url, { validateStatus: false }))
-            );
 
-
-            videoThumbnails = thumbnails.filter((url, i) => thumbnailsFetched[i].status === 200).map((url) => { return { url }; });
+            for await (const quality of qualitys) {
+                const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+                const { status } = await axios(url, { validateStatus: false });
+                if(status === 200) {
+                    videoThumbnailUrl = url;
+                    break;
+                };
+            };
         };
 
         const res = {
@@ -266,7 +265,7 @@ const GetVideoDetails = async (videoId, {
                 badges: secondContent.owner.videoOwnerRenderer.badges?.map((x) => x.metadataBadgeRenderer.icon.iconType) || [],
                 thumbnails: secondContent.owner.videoOwnerRenderer.thumbnail.thumbnails
             },
-            thumbnails: videoThumbnails,
+            thumbnailUrl: videoThumbnailUrl,
             description: secondContent.attributedDescription.content,
             suggestions: result.secondaryResults.secondaryResults.results
             .filter((y) => y.hasOwnProperty("compactVideoRenderer"))
