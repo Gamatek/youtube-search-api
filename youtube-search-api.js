@@ -227,7 +227,7 @@ const GetChannelById = async (channelId) => {
     };
 };
 
-const GetVideoDetails = async (videoId, { fetchVideoThumbnail = true } = {}) => {
+const GetVideoDetails = async (videoId, fetchVideoThumbnail = true) => {
     const endpoint = `${youtubeEndpoint}/watch?v=${videoId}`;
     try {
         const initData = await GetYoutubeInitData(endpoint);
