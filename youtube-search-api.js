@@ -245,9 +245,9 @@ const GetVideoDetails = async (videoId, fetchVideoThumbnail = true) => {
                 "default"
             ];
 
-            for await (const quality of qualitys) {
+            for (const quality of qualitys) {
                 const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
-                const { status } = await axios(url, { validateStatus: false });
+                const { status } = await axios(url, { method: "HEAD", validateStatus: false });
                 if(status === 200) {
                     videoThumbnail = { quality, url };
                     break;
